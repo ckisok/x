@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--<script src="../lib/base64js.min.js"></script>-->
+<!--<script src="../lib/crypto-js@4.2.0.min.js"></script>-->
+<!--<script src="../utils/decrypt.js"></script>-->
+<!--<script src="lib/store.js"></script>-->
+<script>
+    let db
+
+    const request = window.indexedDB.open('wereadx', 1);
+    request.onsuccess = (evt) => {
+        db = evt.target.result
+    }
+    request.onupgradeneeded = (evt) => {
+        db = evt.target.result
+
+        const bookStore = db.createObjectStore("books", {
+            autoIncrement: true,
+        })
+        // 创建一个索引
+        bookStore.createIndex("name", "name", {unique: false})
+    }
+
+    function get() {
+        const bookStore = db.transaction('books', 'readwrite').objectStore('books')
+        bookStore.get('12345').onsuccess = (evt) => {
+            let book = evt.target.result
+            console.log(book)
+            if (!book) {
+                book = {}
+            }
+            book.date = new Date()
+            bookStore.put(book, '12345')
+        }
+    }
+</script>
+</body>
+</html>
