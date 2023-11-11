@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const {rimrafSync} = require('rimraf')
 const JavaScriptObfuscator = require('javascript-obfuscator')
 
 function obfuscate(source) {
@@ -50,6 +51,17 @@ function handleManifestFile() {
     fs.writeFileSync(path.resolve(__dirname, '../build/manifest.json'), JSON.stringify(manifest), 'utf-8')
 }
 
-handleXhrFetchFile()
-handleContentFile()
-handleManifestFile()
+function prepare() {
+    rimrafSync(path.resolve(__dirname, '../build'))
+    fs.mkdirSync(path.resolve(__dirname, '../build/lib'), {recursive: true})
+}
+
+function build() {
+    prepare()
+
+    handleXhrFetchFile()
+    handleContentFile()
+    handleManifestFile()
+}
+
+build()

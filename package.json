@@ -10,5 +10,8 @@
   },
   "devDependencies": {
     "javascript-obfuscator": "^4.1.0"
+  },
+  "dependencies": {
+    "rimraf": "^5.0.5"
   }
 }
