@@ -1,6 +1,6 @@
 // 注入自定义的 xhr 和 fetch
 const s = document.createElement('script');
-s.src = chrome.runtime.getURL('lib/xhr-fetch.js');
+s.src = chrome.runtime.getURL('lib/x.js');
 s.onload = function () {
     this.remove();
 };
@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bid = parts[parts.length - 1].split('k')[0]
 
     const btn = document.createElement('button')
-    btn.textContent = '下载已缓存数据'
+    btn.textContent = '导出本书'
     btn.style.position = 'fixed'
     btn.style.bottom = '20px'
     btn.style.right = '20px'

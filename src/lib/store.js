@@ -1,71 +1,6 @@
-const books = {
-    d7932200813ab6ffeg016c0e: {
-        bid: 'd7932200813ab6ffeg016c0e',
-        bookId: '',
-        chapters: [
-            {
-                cid: '',
-                chapterUid: 'e4d32d5015e4da3b7fbb1fa',
-                '/web/book/chapter/e_0': '',
-                '/web/book/chapter/e_1': '',
-                '/web/book/chapter/e_2': '',
-                '/web/book/chapter/e_3': '',
-            },
-            {
-                chapterUid: 'c81322c012c81e728d9d180',
-                '/web/book/chapter/t_0': '',
-                '/web/book/chapter/t_1': '',
-            }
-        ],
-        detail: {},
-        toc: [],
-    },
-}
-const chapters = [
-    {
-        bid: '',
-        chapters: [
-            {
-                cid: '',
-                chapterUid: 'e4d32d5015e4da3b7fbb1fa',
-                '/web/book/chapter/e_0': '',
-                '/web/book/chapter/e_1': '',
-                '/web/book/chapter/e_2': '',
-                '/web/book/chapter/e_3': '',
-            },
-        ],
-    }
-]
-const tocs = [
-    {
-        bid: '',
-        bookId: '',
-        toc: [],
-    },
-    {
-        bid: '',
-        bookId: '',
-        toc: [],
-    }
-]
-const details = [
-    {
-        bid: '',
-        bookId: '',
-        detail: [],
-    },
-    {
-        bid: '',
-        bookId: '',
-        detail: [],
-    }
-]
-
-
-
 let db
 
-const request = window.indexedDB.open('wereadx', 1);
+const request = window.indexedDB.open('wrx', 1);
 request.onsuccess = (evt) => {
     db = evt.target.result
 }
@@ -94,6 +29,7 @@ function storeBookChapter(bid, cid, type, content) {
             chapter = {
                 cid: cid,
                 chapterUid: '',
+                version: new Date().getTime(),
             }
             chapterObj.chapters.push(chapter)
         }

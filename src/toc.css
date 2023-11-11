@@ -1,7 +1,7 @@
-ul.readerCatalog_list > li {
+ul.readerCatalog_list > li > .chapterItem_link {
     position: relative;
 }
-ul.readerCatalog_list > li::before {
+ul.readerCatalog_list > li > .chapterItem_link::before {
     width: 8px;
     height: 8px;
     border-radius: 100%;
@@ -9,11 +9,11 @@ ul.readerCatalog_list > li::before {
     display: block;
     background: red;
     position: absolute;
-    left: 15px;
+    left: -15px;
     top: 50%;
     transform: translateY(-50%);
 }
-ul.readerCatalog_list > li[data-downloaded="1"]::before {
+ul.readerCatalog_list > li[data-downloaded="1"] > .chapterItem_link::before {
     width: 8px;
     height: 8px;
     border-radius: 100%;
@@ -21,7 +21,7 @@ ul.readerCatalog_list > li[data-downloaded="1"]::before {
     display: block;
     background: #15a96c;
     position: absolute;
-    left: 15px;
+    left: -15px;
     top: 50%;
     transform: translateY(-50%);
 }

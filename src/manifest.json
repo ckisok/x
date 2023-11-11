@@ -1,12 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "wereadx",
+  "name": "wrx",
   "description": "save weread ebook chapter data",
   "version": "2.0",
-  "background": {
-    "service_worker": "sw.js",
-    "type": "module"
-  },
   "host_permissions": [
     "*://*/*"
   ],
@@ -20,7 +16,7 @@
         "lib/crypto-js@4.2.0.min.js",
         "lib/utils.js",
         "lib/store.js",
-        "content.js"
+        "lib/content.js"
       ],
       "css": [
         "toc.css"
