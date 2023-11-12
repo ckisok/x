@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>夏如雯(rxw)</title>
+    <title>夏如雯(xrw)</title>
     <!-- 第三方依赖 -->
     <script src="lib/base64js.min.js"></script>
     <script src="lib/crypto-js@4.2.0.min.js"></script>
     <script src="lib/css-tree@2.3.1.js"></script>
     <script src="lib/xss@1.0.14.js"></script>
+    <script src="lib/uuidv4.min.js"></script>
+    <script src="lib/jszip.min.js"></script>
+    <script src="lib/FileSaver.min.js"></script>
 
     <!-- 微信读书解密文件 -->
     <script src="weread/utils.js"></script>
@@ -18,26 +21,66 @@
 
     <script src="assets/chapter_uid_map.js"></script>
     <script src="utils.js"></script>
+    <script src="epub/utils.js"></script>
+    <script src="epub/epub.js"></script>
 
     <script src="index.js"></script>
+    <link rel="stylesheet" href="assets/reset.css">
+    <link rel="stylesheet" href="assets/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 400px;
+            padding-top: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            width: 100%;
+            padding: 30px;
+        }
+        .overing {
+            box-shadow: 0 0 0 2px forestgreen;
+        }
+        textarea {
+            font-family: monospace, serif;
+            width: 100%;
+            font-size: 16px;
+            resize: none;
+            border-radius: 4px;
+            height: 150px;
+        }
+        textarea::placeholder {
+            display: block;
+            transform: translateY(100%);
+            font-size: 30px;
+            font-family: 'Xingkai SC', serif;
+            color: #aaa3a3;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
+<h1>夏如雯(xrw)</h1>
 <form>
-    <input type="file" name="file" accept="application/json" required>
-    <button>生成 ePub</button>
+    <div class="d-grid gap-4">
+        <label>
+            <textarea name="file" disabled placeholder="拖动文件到此处"></textarea>
+        </label>
+        <div>
+            <input type="radio" class="btn-check" name="format" value="html" id="format-html" autocomplete="off" checked>
+            <label class="btn" for="format-html">HTML</label>
+            <input type="radio" class="btn-check" name="format" value="epub" id="format-epub" autocomplete="off">
+            <label class="btn" for="format-epub">ePub</label>
+        </div>
+        <div class="d-grid gap-2">
+            <button id="btn" disabled type="button" class="btn btn-dark">生成</button>
+        </div>
+    </div>
 </form>
-<script>
-    document.querySelector('form').addEventListener('submit', async (evt) => {
-        evt.preventDefault()
-
-        const formData = new FormData(evt.target)
-        const file = formData.get('file')
-        try {
-            handleFile(JSON.parse(await file.text()))
-        } catch (e) {
-            console.error(e)
-        }
-    })
-</script>
 </body>
 </html>

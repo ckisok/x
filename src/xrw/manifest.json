@@ -1,43 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "wereadx",
-  "description": "save weread ebook chapter data",
-  "version": "2.0",
+  "name": "夏如雯",
+  "description": "是魏如雪的好朋友",
+  "version": "1.0",
   "background": {
     "service_worker": "sw.js",
     "type": "module"
   },
+  "action": {
+    "default_popup": "index.html"
+  },
   "host_permissions": [
-    "*://*/*"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*.weread.qq.com/*"
-      ],
-      "js": [
-        "lib/base64js.min.js",
-        "lib/crypto-js@4.2.0.min.js",
-        "lib/utils.js",
-        "lib/store.js",
-        "content.js"
-      ],
-      "css": [
-        "toc.css"
-      ],
-      "run_at": "document_start",
-      "world": "ISOLATED",
-      "all_frames": false
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "lib/xhr-fetch.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
+    "<all_urls>"
   ]
 }

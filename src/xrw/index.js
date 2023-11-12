@@ -1,5 +1,9 @@
-function handleFile(data) {
-    console.log(data)
+/**
+ * 解密文件
+ * @param {string} data
+ * @return {Promise<{bookInfo: *, bookToc: *[], bookChapters: *[], bookId: string}>}
+ */
+async function decryptFile(data) {
     const {toc: _toc, detail: _detail, chapters: _chapters} = data
 
     const bookInfo = _detail.detail
@@ -77,7 +81,132 @@ function handleFile(data) {
             title: title,
             html: html,
             style: style,
+            chapterUid: chapterInToc.chapterUid,
+            chapterIdx: chapterInToc.chapterIdx,
         })
     })
-    console.log(chapters)
+
+    // 调整图片大小
+    for (const chapter of chapters) {
+        chapter.html = await window.utils.adjustImgSizeInChapter(chapter.html)
+    }
+
+    return {
+        bookId: bookId,
+        bookInfo: bookInfo,
+        bookToc: bookToc,
+        bookChapters: chapters.sort((a, b) => a.chapterIdx - b.chapterIdx)
+    }
 }
+
+/**
+ * 打包书籍
+ * @param {'html'|'epub'}format 打包格式
+ * @param {{bookId: string, bookInfo: *, bookToc: *[], bookChapters: *[]}} bookData
+ * @param {string[]} commonStyles
+ * @param {string[]} commonScripts
+ */
+async function bundleBook(format, bookData, commonStyles = [], commonScripts = []) {
+    let {title, author, cover, intro, isbn, publishTime, publisher} = bookData.bookInfo
+    const book = new window.epub.Book({
+        cover: cover,
+        isbn: isbn,
+        author: author,
+        description: intro,
+        publisher: publisher,
+        publishTime: publishTime,
+        title: title,
+        toc: bookData.bookToc,
+        chapters: bookData.bookChapters,
+        styles: commonStyles,
+        scripts: commonScripts,
+    })
+
+    if (format === 'html') {
+        await book.export2html()
+    } else if (format === 'epub') {
+        book.addEventListener('image', (evt) => {
+            const {success, error} = evt.detail
+            // 更新进度提示
+            document.querySelector('.download_btn').textContent = `打包图片进度: (${success}:${error})`
+        })
+        await book.export2epub()
+    } else {
+        alert('不支持的下载格式: ' + format)
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const textarea = document.querySelector('textarea')
+    let timer
+    let dropFile
+    textarea.addEventListener('dragover', (evt) => {
+        evt.preventDefault()
+        textarea.classList.add('overing')
+        if (timer) {
+            clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
+            textarea.classList.remove('overing')
+        }, 50)
+    })
+    textarea.addEventListener('drop', (evt) => {
+        evt.preventDefault()
+
+        if (evt.dataTransfer.items) {
+            // Use DataTransferItemList interface to access the file(s)
+            for (let i = 0; i < evt.dataTransfer.items.length; i++) {
+                if (evt.dataTransfer.items[i].kind === 'file') {
+                    const file = evt.dataTransfer.items[i].getAsFile()
+                    if (file && file.type === 'application/json') {
+                        dropFile = file
+                    }
+                }
+            }
+        } else if (evt.dataTransfer.files) {
+            // Use DataTransfer interface to access the file(s)
+            for (let i = 0; i < evt.dataTransfer.files.length; i++) {
+                const file = evt.dataTransfer.files[i]
+                if (file && file.type === 'application/json') {
+                    dropFile = file
+                }
+            }
+        }
+
+        if (dropFile) {
+            textarea.value = dropFile.name
+            document.querySelector('#btn').disabled = false
+        } else {
+            alert('请使用json文件')
+        }
+    })
+
+
+    document.querySelector('#btn').addEventListener('click', async (evt) => {
+        evt.preventDefault()
+
+        const formData = new FormData(document.querySelector('form'))
+        const format = formData.get('format')
+
+        if (format !== 'html') {
+            alert('目前仅支持 html 格式')
+            return
+        }
+
+        if (dropFile) {
+            try {
+                document.querySelector('#btn').disabled = true
+                document.querySelector('#btn').textContent = '生成中'
+                const fileContent = await dropFile.text()
+                const book = await decryptFile(JSON.parse(fileContent))
+                console.log(book)
+                await bundleBook(format, book)
+            } catch (e) {
+                console.error(e)
+            } finally {
+                document.querySelector('#btn').disabled = false
+                document.querySelector('#btn').textContent = '生成'
+            }
+        }
+    })
+})
