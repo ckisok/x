@@ -36,7 +36,9 @@ function handleXhrFetchFile() {
 function handleContentFile() {
     const utilsSource = fs.readFileSync(resolveSourceFile('lib/utils.js')).toString('utf-8')
     const storeSource = fs.readFileSync(resolveSourceFile('lib/store.js')).toString('utf-8')
-    const contentSource = fs.readFileSync(resolveSourceFile('lib/content.js')).toString('utf-8')
+    let contentSource = fs.readFileSync(resolveSourceFile('lib/content.js')).toString('utf-8')
+    // 改写 xhr-fetch.js 的引入路径
+    contentSource = contentSource.replace('lib/xhr-fetch.js', 'lib/x.js')
     const source = `${utilsSource};${storeSource};${contentSource}`
     fs.writeFileSync(path.resolve(__dirname, '../build/lib/content.js'), obfuscate(source), {encoding: 'utf-8'})
 }
@@ -46,14 +48,13 @@ function copyFile(src, dest) {
 }
 
 function handleManifestFile() {
-    copyFile(resolveSourceFile('lib/base64js.min.js'), path.resolve(__dirname, '../build/lib/base64js.min.js'))
     copyFile(resolveSourceFile('lib/crypto-js@4.2.0.min.js'), path.resolve(__dirname, '../build/lib/crypto-js@4.2.0.min.js'))
     copyFile(resolveSourceFile( 'toc.css'), path.resolve(__dirname, '../build/toc.css'))
 
     const manifest = JSON.parse(fs.readFileSync(resolveSourceFile('manifest.json'), 'utf-8'))
     manifest['web_accessible_resources'][0]['resources'][0] = 'lib/x.js'
-    manifest['content_scripts'][0]['js'][2] = 'lib/content.js'
-    manifest['content_scripts'][0]['js'].length = 3
+    manifest['content_scripts'][0]['js'][1] = 'lib/content.js'
+    manifest['content_scripts'][0]['js'].length = 2
     fs.writeFileSync(path.resolve(__dirname, '../build/manifest.json'), JSON.stringify(manifest), 'utf-8')
 }
 
