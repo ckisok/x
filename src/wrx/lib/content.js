@@ -28,7 +28,7 @@
         })
         document.body.appendChild(btn)
 
-        window.store.initBook(bid)
+        window.store.initBookState(bid)
     })
 
 
@@ -49,7 +49,7 @@
                 window.store.storeBookChapter(b, c, api, response)
 
                 setTimeout(() => {
-                    window.store.updateChapterDownloadState(b, c)
+                    window.store.markChapterDownloaded(b, c)
                 }, 200)
                 break
             case '/web/book/publicinfos':

@@ -101,14 +101,15 @@
                 $lis.forEach($li => {
                     // 找到对应的信息
                     // txt书籍需要去掉标题开头的 第*章
-                    const targetTitle = $li.textContent.replace(/^第\d+?章\s/, '')
+                    const re = /^第\d+?章\s/
+                    const targetTitle = $li.textContent.replace(re, '')
 
                     const target = tocObj.toc.find(item => {
-                        if (item.title === targetTitle) {
+                        if (item.title.replace(re, '') === targetTitle) {
                             return true
                         }
                         if (Array.isArray(item.anchors)) {
-                            return item.anchors.find(_ => _.title === targetTitle)
+                            return item.anchors.find(_ => _.title.replace(re, '') === targetTitle)
                         }
                         return false
                     })
@@ -124,8 +125,12 @@
         }
     }
 
-    // 更新目录中章节的下载状态
-    function updateChapterDownloadState(bid, cid) {
+    /**
+     * 标记对应章节的下载状态
+     * @param bid bookId
+     * @param cid chapterUId
+     */
+    function markChapterDownloaded(bid, cid) {
         // console.debug('[wrx] updateChapterDownloadState: ', bid, cid)
 
         document.querySelectorAll(`li[data-cid="${cid}"]`).forEach($li => {
@@ -133,8 +138,8 @@
         })
     }
 
-    // 从缓存中读取数据更新页面
-    function initBook(bid) {
+    // 从缓存中读取数据更新到页面
+    function initBookState(bid) {
         // console.debug('[wrx] initBook: ', bid)
 
         // 初始化 catalog
@@ -148,7 +153,7 @@
                     return
                 }
                 chapterObj.chapters.forEach(chapter => {
-                    updateChapterDownloadState(bid, chapter.cid)
+                    markChapterDownloaded(bid, chapter.cid)
                 })
             }
         }, 500)
@@ -189,8 +194,8 @@
         storeBookToc: storeBookToc,
         storeBookDetail: storeBookDetail,
         updatePageCatalog: updatePageCatalog,
-        updateChapterDownloadState: updateChapterDownloadState,
-        initBook: initBook,
+        markChapterDownloaded: markChapterDownloaded,
+        initBookState: initBookState,
         exportBookData: exportBookData,
     }
 })()
