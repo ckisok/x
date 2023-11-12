@@ -14,21 +14,29 @@ function handleFile(data) {
         let style
         if ('/web/book/chapter/e_0' in chapter) {
             // epub
-            style = dS(chapter['/web/book/chapter/e_2'])
-            style = parseStyle(style, {
+            chapter['/web/book/chapter/e_0'] = window.decrypt.chk(chapter['/web/book/chapter/e_0'])
+            chapter['/web/book/chapter/e_1'] = window.decrypt.chk(chapter['/web/book/chapter/e_1'])
+            chapter['/web/book/chapter/e_2'] = window.decrypt.chk(chapter['/web/book/chapter/e_2'])
+            chapter['/web/book/chapter/e_3'] = window.decrypt.chk(chapter['/web/book/chapter/e_3'])
+
+            style = window.decrypt.dS(chapter['/web/book/chapter/e_2'])
+            style = window.style.parse(style, {
                 removeFontSizes: true,
                 enableTranslate: false,
             })
-            chapter.style = processStyles(style, bookId)
+            chapter.style = window.mutation.processStyles(style, bookId)
 
-            const html = dH(chapter['/web/book/chapter/e_0'] + chapter['/web/book/chapter/e_1'] + chapter['/web/book/chapter/e_3'])
-            const htmls = parseHtml(html, style, 10000)
-            chapter.htmls = processHtmls(htmls, bookId)
+            const html = window.decrypt.dH(chapter['/web/book/chapter/e_0'] + chapter['/web/book/chapter/e_1'] + chapter['/web/book/chapter/e_3'])
+            const htmls = window.html.parse(html, style, 10000)
+            chapter.htmls = window.mutation.processHtmls(htmls, bookId)
         } else if ('/web/book/chapter/t_0' in chapter) {
             // txt
-            const html = dT(chapter['/web/book/chapter/t_0'] + chapter['/web/book/chapter/t_1'])
-            const htmls = parseTxt(html, 10000)
-            chapter.htmls = processHtmls(htmls, bookId)
+            chapter['/web/book/chapter/t_0'] = window.decrypt.chk(chapter['/web/book/chapter/t_0'])
+            chapter['/web/book/chapter/t_1'] = window.decrypt.chk(chapter['/web/book/chapter/t_1'])
+
+            const html = window.decrypt.dT(chapter['/web/book/chapter/t_0'] + chapter['/web/book/chapter/t_1'])
+            const htmls = window.html.parseTxt(html, 10000)
+            chapter.htmls = window.mutation.processHtmls(htmls, bookId)
         }
 
         // 对 html 进行一些处理
@@ -53,14 +61,17 @@ function handleFile(data) {
             return html;
         }).join("");
 
-        let html = `<section data-book-id="${bookId}" data-chapter-uid="${chapter.chapterUid}" class="readerChapterContent">`
+
+        const chapterInToc = bookToc.find(item => item.chapterUid === chapter.chapterUid)
+
+        let html = `<section data-book-id="${bookId}" data-chapter-uid="${chapterInToc.chapterUid}" class="readerChapterContent">`
         // 判断是否添加章节标题
-        if (showChapterTitle(bookInfo)) {
-            html += `<div class="chapterTitle">${chapterTitleText(bookInfo, chapter)}</div>`
+        if (window.m278.showChapterTitle(bookInfo)) {
+            html += `<div class="chapterTitle">${window.m278.chapterTitleText(bookInfo, chapterInToc)}</div>`
         }
         html += `${sections}</section>`
-        html = mergeSpanInHtml(html)
-        const title = chapterTitleText(bookInfo, chapter) || chapter.title
+        html = window.utils.mergeSpanInHtml(html)
+        const title = window.m278.chapterTitleText(bookInfo, chapterInToc) || chapterInToc.title
 
         chapters.push({
             title: title,
