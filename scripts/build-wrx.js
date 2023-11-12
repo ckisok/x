@@ -3,10 +3,14 @@ const fs = require('fs')
 const {rimrafSync} = require('rimraf')
 const JavaScriptObfuscator = require('javascript-obfuscator')
 
-const sourceDir = '../src/crx/'
+const sourceDir = '../src/wrx/'
+const outputDir = '../build/wrx/'
 
 function resolveSourceFile(file) {
     return path.resolve(__dirname, sourceDir, file)
+}
+function resolveOutputFile(file) {
+    return path.resolve(__dirname, outputDir, file)
 }
 
 function obfuscate(source) {
@@ -30,7 +34,7 @@ function obfuscate(source) {
 
 function handleXhrFetchFile() {
     const xhrSource = fs.readFileSync(resolveSourceFile('lib/xhr-fetch.js')).toString('utf-8')
-    fs.writeFileSync(path.resolve(__dirname, '../build/lib/x.js'), obfuscate(xhrSource), {encoding: 'utf-8'})
+    fs.writeFileSync(resolveOutputFile('lib/x.js'), obfuscate(xhrSource), {encoding: 'utf-8'})
 }
 
 function handleContentFile() {
@@ -40,7 +44,7 @@ function handleContentFile() {
     // 改写 xhr-fetch.js 的引入路径
     contentSource = contentSource.replace('lib/xhr-fetch.js', 'lib/x.js')
     const source = `${utilsSource};${storeSource};${contentSource}`
-    fs.writeFileSync(path.resolve(__dirname, '../build/lib/content.js'), obfuscate(source), {encoding: 'utf-8'})
+    fs.writeFileSync(resolveOutputFile('lib/content.js'), obfuscate(source), {encoding: 'utf-8'})
 }
 
 function copyFile(src, dest) {
@@ -48,19 +52,19 @@ function copyFile(src, dest) {
 }
 
 function handleManifestFile() {
-    copyFile(resolveSourceFile('lib/crypto-js@4.2.0.min.js'), path.resolve(__dirname, '../build/lib/crypto-js@4.2.0.min.js'))
-    copyFile(resolveSourceFile( 'toc.css'), path.resolve(__dirname, '../build/toc.css'))
+    copyFile(resolveSourceFile('lib/crypto-js@4.2.0.min.js'), resolveOutputFile('lib/crypto-js@4.2.0.min.js'))
+    copyFile(resolveSourceFile( 'toc.css'), resolveOutputFile('toc.css'))
 
     const manifest = JSON.parse(fs.readFileSync(resolveSourceFile('manifest.json'), 'utf-8'))
     manifest['web_accessible_resources'][0]['resources'][0] = 'lib/x.js'
     manifest['content_scripts'][0]['js'][1] = 'lib/content.js'
     manifest['content_scripts'][0]['js'].length = 2
-    fs.writeFileSync(path.resolve(__dirname, '../build/manifest.json'), JSON.stringify(manifest), 'utf-8')
+    fs.writeFileSync(resolveOutputFile('manifest.json'), JSON.stringify(manifest), 'utf-8')
 }
 
 function prepare() {
-    rimrafSync(path.resolve(__dirname, '../build'))
-    fs.mkdirSync(path.resolve(__dirname, '../build/lib'), {recursive: true})
+    rimrafSync(resolveOutputFile('wrx/'))
+    fs.mkdirSync(resolveOutputFile('lib'), {recursive: true})
 }
 
 function build() {
