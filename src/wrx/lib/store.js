@@ -96,30 +96,51 @@
                     return
                 }
 
+                // 需要把 toc 转成扁平结构
+                for (let i = 0; i < tocObj.toc.length; i++) {
+                    const chapter = tocObj.toc[i]
+
+                    chapter.level = chapter.level || 1
+
+                    if (Array.isArray(chapter.anchors) && chapter.anchors.length > 0) {
+                        const anchors = chapter.anchors
+                        delete chapter['anchors']
+                        const anchorChapters = anchors.map((anchor) => ({
+                            ...chapter,
+                            title: anchor.title,
+                            level: anchor.level,
+                            anchor: anchor.anchor,
+                            isAnchor: true,
+                        }))
+
+                        // 把 anchor 插入到顶层位置
+                        tocObj.toc.splice(i+1, 0, ...anchorChapters)
+                    }
+                }
+
                 const $lis = $ul.querySelectorAll('li')
-                // console.debug('[wrx] update catalog', $lis.length)
-                $lis.forEach($li => {
-                    // 找到对应的信息
+                const hasCover = $lis[0].textContent === '封面'
+                for (let i = 0; i < $lis.length; i++) {
+                    const $li = $lis[i]
+                    // 找到对应的目录信息
                     // txt书籍需要去掉标题开头的 第*章
                     const re = /^第\d+?章\s/
-                    const targetTitle = $li.textContent.replace(re, '')
+                    const liTitle = $li.textContent.replace(re, '')
 
-                    const target = tocObj.toc.find(item => {
-                        if (item.title.replace(re, '') === targetTitle) {
-                            return true
-                        }
-                        if (Array.isArray(item.anchors)) {
-                            return item.anchors.find(_ => _.title.replace(re, '') === targetTitle)
-                        }
-                        return false
-                    })
-                    // console.debug('[wrx] ', target)
-                    if (target) {
-                        $li.dataset.chapterIdx = target.chapterIdx
-                        $li.dataset.chapterUid = target.chapterUid
-                        $li.dataset.cid = window.utils.hash(target.chapterUid)
+                    let tocData
+                    if (hasCover) {
+                        tocData = tocObj.toc[i]
+                    } else {
+                        tocData = tocObj.toc[i+1]
                     }
-                })
+                    if (tocData.title.replace(re, '') === liTitle) {
+                        $li.dataset.chapterIdx = tocData.chapterIdx
+                        $li.dataset.chapterUid = tocData.chapterUid
+                        $li.dataset.cid = window.utils.hash(tocData.chapterUid)
+                    } else {
+                        console.warn('这本书的目录数据需要特殊适配，请联系开发者')
+                    }
+                }
                 $ul.dataset.updated = '1'
             }
         }
