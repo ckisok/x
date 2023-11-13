@@ -136,6 +136,36 @@
         document.querySelectorAll(`li[data-cid="${cid}"]`).forEach($li => {
             $li.dataset.downloaded = '1'
         })
+
+        if (checkWholeBookDownloaded()) {
+            // 标记整本书下载完成
+            markBookDownloaded()
+        }
+    }
+
+    /**
+     * 标记整本书已下载完整
+     */
+    function markBookDownloaded() {
+        const targetDom = document.querySelector('.readerCatalog > .readerCatalog_bookInfo')
+        if (targetDom.dataset.downloaded === '1') {
+            return
+        }
+        targetDom.dataset.downloaded = '1'
+        const btn = document.querySelector('#__wrx_export__')
+        if (btn) {
+            btn.textContent += ' (全)'
+            btn.style.background = 'green'
+            btn.style.color = 'white'
+        }
+    }
+
+    /**
+     * 检查整本书是否下载完整
+     */
+    function checkWholeBookDownloaded() {
+        const $lis = document.querySelectorAll('.readerCatalog ul > li')
+        return Array.from($lis).every($li => $li.dataset.downloaded === '1')
     }
 
     // 从缓存中读取数据更新到页面

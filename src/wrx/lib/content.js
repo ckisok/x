@@ -14,12 +14,14 @@
 
         const btn = document.createElement('button')
         btn.textContent = '导出本书数据'
+        btn.id = '__wrx_export__'
         btn.style.position = 'fixed'
         btn.style.bottom = '20px'
         btn.style.right = '20px'
         btn.style.fontSize = '16px'
-        btn.style.background = 'green'
-        btn.style.color = 'white'
+        btn.style.fontWeight = 'bold'
+        btn.style.background = '#e9e9e99c'
+        btn.style.color = '#a32727'
         btn.style.padding = '.5em .75em'
         btn.style.borderRadius = '5px'
         btn.style.zIndex = '9999'
