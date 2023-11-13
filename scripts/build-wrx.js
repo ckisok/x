@@ -1,5 +1,6 @@
 const path = require('path')
 const fs = require('fs')
+const fse = require('fs-extra')
 const {rimrafSync} = require('rimraf')
 const JavaScriptObfuscator = require('javascript-obfuscator')
 
@@ -32,6 +33,10 @@ function obfuscate(source) {
     return JavaScriptObfuscator.obfuscate(source, options).getObfuscatedCode()
 }
 
+function copyDirectory(src, dest) {
+    fse.copySync(resolveSourceFile(src), resolveOutputFile(dest), {override: true})
+}
+
 function handleXhrFetchFile() {
     const xhrSource = fs.readFileSync(resolveSourceFile('lib/xhr-fetch.js')).toString('utf-8')
     fs.writeFileSync(resolveOutputFile('lib/x.js'), obfuscate(xhrSource), {encoding: 'utf-8'})
@@ -47,13 +52,14 @@ function handleContentFile() {
     fs.writeFileSync(resolveOutputFile('lib/content.js'), obfuscate(source), {encoding: 'utf-8'})
 }
 
-function copyFile(src, dest) {
-    fs.writeFileSync(dest, fs.readFileSync(src, 'utf-8'), 'utf-8')
-}
-
 function handleManifestFile() {
-    copyFile(resolveSourceFile('lib/crypto-js@4.2.0.min.js'), resolveOutputFile('lib/crypto-js@4.2.0.min.js'))
-    copyFile(resolveSourceFile( 'toc.css'), resolveOutputFile('toc.css'))
+    ;[
+        'assets',
+        'lib/autoScript.js',
+        'lib/crypto-js@4.2.0.min.js',
+        'popup.html',
+        'toc.css',
+    ].forEach(item => copyDirectory(item, item));
 
     const manifest = JSON.parse(fs.readFileSync(resolveSourceFile('manifest.json'), 'utf-8'))
     manifest['web_accessible_resources'][0]['resources'][0] = 'lib/x.js'

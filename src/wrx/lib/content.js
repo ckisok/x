@@ -80,4 +80,4 @@
             handleApiData(data)
         }
     });
-})()
+})();

@@ -20,6 +20,17 @@
       "run_at": "document_start",
       "world": "ISOLATED",
       "all_frames": false
+    },
+    {
+      "matches": [
+        "https://*.weread.qq.com/web/reader/*"
+      ],
+      "js": [
+        "lib/autoScript.js"
+      ],
+      "run_at": "document_idle",
+      "world": "ISOLATED",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [
@@ -31,5 +42,8 @@
         "<all_urls>"
       ]
     }
-  ]
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
 }
