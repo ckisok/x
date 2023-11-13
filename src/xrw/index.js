@@ -1,3 +1,11 @@
+const CommonStylesAssets = [
+    chrome.runtime.getURL('assets/styles/footer_note.css'),
+    chrome.runtime.getURL('assets/styles/reset.css'),
+]
+const CommonStyles = Promise.all(CommonStylesAssets.map(url => {
+    return fetch(url).then(resp => resp.text())
+}))
+
 /**
  * 解密文件
  * @param {string} data
@@ -136,6 +144,7 @@ async function bundleBook(format, bookData, commonStyles = [], commonScripts = [
     }
 }
 
+
 document.addEventListener('DOMContentLoaded', async () => {
     const textarea = document.querySelector('textarea')
     let timer
@@ -187,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const formData = new FormData(document.querySelector('form'))
         const format = formData.get('format')
+        const commonStyles = await CommonStyles
 
         if (format !== 'html') {
             alert('目前仅支持 html 格式')
@@ -194,19 +204,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (dropFile) {
-            try {
-                document.querySelector('#btn').disabled = true
-                document.querySelector('#btn').textContent = '生成中'
-                const fileContent = await dropFile.text()
-                const book = await decryptFile(JSON.parse(fileContent))
-                console.log(book)
-                await bundleBook(format, book)
-            } catch (e) {
-                console.error(e)
-            } finally {
-                document.querySelector('#btn').disabled = false
-                document.querySelector('#btn').textContent = '生成'
-            }
+            document.querySelector('#btn').disabled = true
+            document.querySelector('#btn').textContent = '生成中'
+
+            setTimeout(async () => {
+                try {
+                    const fileContent = await dropFile.text()
+                    const book = await decryptFile(JSON.parse(fileContent))
+                    console.log(book)
+                    await bundleBook(format, book, commonStyles)
+                } catch (e) {
+                    console.error(e)
+                } finally {
+                    document.querySelector('#btn').disabled = false
+                    document.querySelector('#btn').textContent = '生成'
+                }
+            }, 0)
+
         }
     })
 })

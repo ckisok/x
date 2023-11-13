@@ -55,7 +55,6 @@ function build() {
         'epub',
         'lib',
         'index.html',
-        'index.js',
         'manifest.json',
         'sw.js',
         'utils.js',
@@ -67,6 +66,7 @@ function build() {
         'weread/m278.js',
         'weread/mutation.js',
         'weread/utils.js',
+        'index.js',
     ].forEach(item => copyAndObfuscateFile(item, item))
 }
 
