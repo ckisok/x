@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>小雪</title>
+    <title>微信读书自动翻页</title>
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <script src="assets/popup.js"></script>
     <style>
@@ -22,19 +22,19 @@
     </style>
 </head>
 <body>
-<h1>自动翻页</h1>
+<h1>微信读书自动翻页</h1>
 <form>
     <div class="d-grid gap-2">
         <div>
             <span>翻页方式:</span>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="direction" value="readerFooter_button" id="dir-next" checked>
+                <input class="form-check-input" type="radio" name="direction" value="next" id="dir-next" checked>
                 <label class="form-check-label" for="dir-next">
                     向后翻页
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="direction" value="readerHeaderButton" id="dir-prev">
+                <input class="form-check-input" type="radio" name="direction" value="prev" id="dir-prev">
                 <label class="form-check-label" for="dir-prev">
                     向前翻页
                 </label>
@@ -49,14 +49,14 @@
         <div>
             <span>间隔:</span>
             <div class="input-group">
-                <input type="number" min="2" class="form-control" placeholder="翻页间隔，单位：秒(默认4秒)" name="duration">
+                <input type="number" min="2" class="form-control" placeholder="翻页间隔，单位：秒(默认5秒)" name="interval">
                 <span class="input-group-text">秒</span>
             </div>
         </div>
 
         <div class="d-grid gap-2 d-flex justify-content-between">
-            <button id="start" type="submit" class="btn btn-dark flex-grow-1">开始</button>
-            <button id="stop" type="submit" class="btn btn-dark flex-grow-1">停止</button>
+            <button id="start" type="button" class="btn btn-dark flex-grow-1">开始</button>
+            <button id="stop" type="button" class="btn btn-dark flex-grow-1">停止</button>
         </div>
     </div>
 </form>

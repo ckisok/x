@@ -1,14 +1,12 @@
-
-
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#start').addEventListener('click', async (evt) => {
         evt.preventDefault()
 
         const formData = new FormData(document.querySelector('form'))
-        const dir = formData.get('direction')
-        let duration = parseInt(formData.get('duration').toString())
-        if (Number.isNaN(duration)) {
-            duration = 4
+        const direction = formData.get('direction')
+        let interval = parseInt(formData.get('interval').toString())
+        if (Number.isNaN(interval)) {
+            interval = 5
         }
         const isScroll = formData.get('isScroll') === 'on'
 
@@ -16,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
             chrome.tabs.sendMessage(tabs[0].id, {
                 type: "start",
                 args: {
-                    dir: dir,
-                    duration: duration,
-                    scroll: isScroll,
+                    direction: direction,
+                    interval: interval,
+                    isScroll: isScroll,
                 },
             })
         });

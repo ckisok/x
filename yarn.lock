@@ -202,6 +202,11 @@ charenc@0.0.2:
   resolved "https://registry.npmjs.org/charenc/-/charenc-0.0.2.tgz#c0a1d2f3a7092e03774bfa83f14c0fc5790a8667"
   integrity sha512-yrLQ/yVUFXkzg7EDQsPieE/53+0RlaWTs+wBrvW36cyilJ2SaDWfl4Yj7MtLTXleV9uEKefbAGUPv2/iWSooRA==
 
+chrome-types@^0.1.242:
+  version "0.1.242"
+  resolved "https://registry.npmjs.org/chrome-types/-/chrome-types-0.1.242.tgz#32ad943bba798adc8cb57504ff5bfcb0c0073985"
+  integrity sha512-6BT13ddyP9G13rBRJNh1HKZHXpM2aieChLg4e+afiOEEnzSlF1ssgs4Fyr68KlrrJbsOFncLXnxq6ZafnU0xzw==
+
 class-validator@0.14.0:
   version "0.14.0"
   resolved "https://registry.npmjs.org/class-validator/-/class-validator-0.14.0.tgz#40ed0ecf3c83b2a8a6a320f4edb607be0f0df159"
