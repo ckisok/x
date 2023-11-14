@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "魏如雪",
   "description": "你可以叫我小雪，我是夏如雯的好朋友",
-  "version": "2.5.1",
+  "version": "2.5.2",
   "content_scripts": [
     {
       "matches": [

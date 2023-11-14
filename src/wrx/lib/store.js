@@ -103,7 +103,7 @@
                     chapter.level = chapter.level || 1
 
                     if (Array.isArray(chapter.anchors) && chapter.anchors.length > 0) {
-                        const anchors = chapter.anchors
+                        const anchors = chapter.anchors.filter(_ => _.level > 1)
                         delete chapter['anchors']
                         const anchorChapters = anchors.map((anchor) => ({
                             ...chapter,
