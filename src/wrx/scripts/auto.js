@@ -71,6 +71,7 @@ chrome.runtime.onMessage.addListener(async (msg) => {
         case 'start':
             if (isRunning) {
                 // 避免重复执行
+                console.debug('正在运行中，不需要重复执行')
                 return
             }
             wantStop = false
