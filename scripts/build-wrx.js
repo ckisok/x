@@ -3,6 +3,7 @@ const fs = require('fs')
 const fse = require('fs-extra')
 const {rimrafSync} = require('rimraf')
 const JavaScriptObfuscator = require('javascript-obfuscator')
+const zl = require('zip-lib')
 
 const sourceDir = '../src/wrx/'
 const outputDir = '../build/wrx/'
@@ -69,7 +70,7 @@ function handleManifestFile() {
 }
 
 function prepare() {
-    rimrafSync(resolveOutputFile('wrx/'))
+    rimrafSync(resolveOutputFile('.'))
     fs.mkdirSync(resolveOutputFile('lib'), {recursive: true})
 }
 
@@ -82,3 +83,7 @@ function build() {
 }
 
 build()
+
+zl.archiveFolder(resolveOutputFile('.'), resolveOutputFile('../wrx.zip')).then(() => {
+    // rimrafSync(resolveOutputFile('.'))
+})

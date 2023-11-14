@@ -3,6 +3,7 @@ const fs = require('fs')
 const fse = require('fs-extra')
 const {rimrafSync} = require('rimraf')
 const JavaScriptObfuscator = require('javascript-obfuscator')
+const zl = require('zip-lib')
 
 const sourceDir = '../src/xrw/'
 const outputDir = '../build/xrw/'
@@ -71,3 +72,7 @@ function build() {
 }
 
 build()
+
+zl.archiveFolder(resolveOutputFile('.'), resolveOutputFile('../xrw.zip')).then(() => {
+    // rimrafSync(resolveOutputFile('.'))
+})
