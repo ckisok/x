@@ -49,17 +49,20 @@ function setAutoRunningStatus(open) {
     }
 }
 
-async function run(direction, interval, isScroll) {
-    const adjustInterval = randomInteger(interval * 1000, (interval + 1) * 1000 + 500)
-
-    isRunning = true
-    setAutoRunningStatus(isRunning)
-
+function checkStop() {
     if (wantStop) {
         isRunning = false
         setAutoRunningStatus(isRunning)
-        return
+        return true
     }
+    return false
+}
+
+async function run(direction, interval, isScroll) {
+    if (checkStop()) return
+
+    isRunning = true
+    setAutoRunningStatus(isRunning)
 
     let btn = document.querySelector(selectorMap[direction])
     if (!btn) {
@@ -88,15 +91,22 @@ async function run(direction, interval, isScroll) {
     retry = 0
     if (isScroll) {
         await sleep(1000)
+        if (checkStop()) return
+
         if (direction === 'prev') {
             window.scroll({top: 0, behavior: 'smooth'})
         } else {
             window.scroll({top: 100000, behavior: 'smooth'})
         }
+
         await sleep(1500)
+        if (checkStop()) return
     }
     console.debug('开始翻页')
     btn.click()
+
+    if (checkStop()) return
+    const adjustInterval = randomInteger(interval * 1000, (interval + 1) * 1000 + 500)
     setTimeout(() => {
         run(direction, interval, isScroll)
     }, adjustInterval)
@@ -119,6 +129,7 @@ chrome.runtime.onMessage.addListener(async (msg) => {
             break
         case 'stop':
             wantStop = true
+            setAutoRunningStatus(false)
             break
     }
 })
