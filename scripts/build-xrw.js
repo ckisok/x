@@ -2,7 +2,7 @@ const path = require('path')
 const fs = require('fs')
 const fse = require('fs-extra')
 const {rimrafSync} = require('rimraf')
-const JavaScriptObfuscator = require('javascript-obfuscator')
+const {obfuscate} = require('./utils')
 const zl = require('zip-lib')
 
 const sourceDir = '../src/xrw/'
@@ -13,25 +13,6 @@ function resolveSourceFile(file) {
 }
 function resolveOutputFile(file) {
     return path.resolve(__dirname, outputDir, file)
-}
-
-function obfuscate(source) {
-    const options = {
-        compact: true,
-        controlFlowFlattening: true,
-        controlFlowFlatteningThreshold: 1,
-        deadCodeInjection: true,
-        deadCodeInjectionThreshold: 1,
-        debugProtection: true,
-        debugProtectionInterval: 0,
-        numbersToExpressions: true,
-        renameGlobals: true,
-        simplify: true,
-        stringArrayShuffle: true,
-        splitStrings: true,
-        stringArrayThreshold: 1,
-    }
-    return JavaScriptObfuscator.obfuscate(source, options).getObfuscatedCode()
 }
 
 function copyAndObfuscateFile(src, dest) {
