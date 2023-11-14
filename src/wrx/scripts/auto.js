@@ -16,7 +16,7 @@ const selectorMap = {
 }
 
 // 在页面添加一个按钮
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const span = document.createElement('span')
     span.textContent = '自动阅读: 关'
     span.id = '__wrx_auto_read__'
@@ -31,6 +31,10 @@ document.addEventListener('DOMContentLoaded', () => {
     span.style.borderRadius = '5px'
     span.style.zIndex = '9999'
     document.body.appendChild(span)
+
+    const storageUsage = await navigator.storage.estimate()
+    const indexedSize = (storageUsage.usage / 1024 / 1024).toFixed(2)
+    console.log(`[wrx]: IndexedDB 使用了 %c~${indexedSize}M%c 存储空间`, 'color: red;font-size:16px;', '')
 })
 
 function setAutoRunningStatus(open) {
