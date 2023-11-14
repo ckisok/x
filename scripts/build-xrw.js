@@ -73,6 +73,11 @@ function build() {
 
 build()
 
-zl.archiveFolder(resolveOutputFile('.'), resolveOutputFile('../xrw.zip')).then(() => {
+function readVersion() {
+    const manifest = JSON.parse(fs.readFileSync(resolveSourceFile('manifest.json'), 'utf-8'))
+    return manifest.version
+}
+
+zl.archiveFolder(resolveOutputFile('.'), resolveOutputFile(`../xrw-${readVersion()}.zip`)).then(() => {
     // rimrafSync(resolveOutputFile('.'))
 })
