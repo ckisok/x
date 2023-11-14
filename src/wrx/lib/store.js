@@ -105,7 +105,8 @@
                     if (Array.isArray(chapter.anchors) && chapter.anchors.length > 0) {
                         const anchors = chapter.anchors.filter(_ => _.level > 1)
                         delete chapter['anchors']
-                        const anchorChapters = anchors.map((anchor) => ({
+                        // 过滤掉与大标题一样的，参考这本书: https://weread.qq.com/web/reader/739322a07269560473951d3
+                        const anchorChapters = anchors.filter(_ => _.title !== chapter.title).map((anchor) => ({
                             ...chapter,
                             title: anchor.title,
                             level: anchor.level,
@@ -231,7 +232,7 @@
                         detail: detailObj,
                         chapters: chapterObj,
                     }
-                    const file = new File([JSON.stringify(book)], tocObj.bookId + ".json", {
+                    const file = new File([JSON.stringify(book)], detailObj.detail.title + ".json", {
                         type: "application/json",
                     })
                     window.utils.downloadFile(file)

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "魏如雪",
   "description": "你可以叫我小雪，我是夏如雯的好朋友",
-  "version": "2.6",
+  "version": "2.6.1",
   "permissions": [
     "declarativeNetRequest",
     "declarativeNetRequestFeedback"
@@ -44,7 +44,10 @@
       ],
       "js": [
         "scripts/auto.js"
-      ]
+      ],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": false
     }
   ],
   "web_accessible_resources": [

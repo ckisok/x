@@ -16,7 +16,7 @@
         btn.textContent = '导出本书数据'
         btn.id = '__wrx_export__'
         btn.style.position = 'fixed'
-        btn.style.bottom = '20px'
+        btn.style.top = '80px'
         btn.style.right = '20px'
         btn.style.fontSize = '16px'
         btn.style.fontWeight = 'bold'
