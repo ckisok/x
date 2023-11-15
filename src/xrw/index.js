@@ -190,9 +190,9 @@ async function bundleBook(format, bookData, commonStyles = [], commonScripts = [
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-    const textarea = document.querySelector('textarea')
     let timer
     let dropFile
+    let isRunning = false
     document.querySelector('input[type=file]').addEventListener('change', (evt) => {
         if (evt.target.files.length > 0) {
             dropFile = evt.target.files[0]
@@ -200,6 +200,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.querySelector('#btn').disabled = false
         }
     })
+
+    const textarea = document.querySelector('textarea')
     textarea.addEventListener('dragover', (evt) => {
         evt.preventDefault()
         textarea.classList.add('overing')
@@ -243,7 +245,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     textarea.addEventListener('click', (evt) => {
         evt.preventDefault()
 
-        document.querySelector('input[type=file]').click()
+        // 如果正在生成中，则不能选择新的文件
+        if (isRunning === false) {
+            document.querySelector('input[type=file]').click()
+        }
     })
 
 
@@ -253,6 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (dropFile) {
             document.querySelector('#btn').disabled = true
             document.querySelector('#btn').textContent = '解密中'
+            isRunning = true
 
             setTimeout(async () => {
                 const formData = new FormData(document.querySelector('form'))
@@ -273,6 +279,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } finally {
                     document.querySelector('#btn').disabled = false
                     document.querySelector('#btn').textContent = '生成'
+                    isRunning = false
                 }
             }, 0)
         }
