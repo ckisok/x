@@ -119,8 +119,9 @@
                     }
                 }
 
+                const tocHasCover = tocObj.toc[0].title === '封面'
                 const $lis = $ul.querySelectorAll('li')
-                const hasCover = $lis[0].textContent === '封面'
+                const catalogHasCover = $lis[0].textContent === '封面'
                 for (let i = 0; i < $lis.length; i++) {
                     const $li = $lis[i]
                     // 找到对应的目录信息
@@ -129,10 +130,10 @@
                     const liTitle = $li.textContent.replace(re, '')
 
                     let tocData
-                    if (hasCover) {
-                        tocData = tocObj.toc[i]
-                    } else {
+                    if (!catalogHasCover && tocHasCover) {
                         tocData = tocObj.toc[i+1]
+                    } else {
+                        tocData = tocObj.toc[i]
                     }
                     if (tocData.title.replace(re, '') === liTitle) {
                         $li.dataset.chapterIdx = tocData.chapterIdx
