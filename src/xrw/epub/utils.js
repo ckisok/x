@@ -189,6 +189,23 @@
         }
     }
 
+    function getImgMimeType(url) {
+        const ext = new URL(url, 'https://example.com').pathname.split(".").pop().trim();
+        const map = {
+            apng: 'image/apng',
+            bmp: 'image/bmp',
+            gif: 'image/gif',
+            icon: 'image/x-icon',
+            jpg: 'image/jpeg',
+            jpeg: 'image/jpeg',
+            png: 'image/png',
+            svg: 'image/svg+xml',
+            tiff: 'image/tiff',
+            webp: 'image/webp',
+        }
+        return map[ext] || 'unknown'
+    }
+
     /**
      * Import a UMD file using a promise
      * @param {string} url
@@ -229,10 +246,11 @@
         saveAs(blob, `${filename}.zip`)
     }
 
-    window.epubUtils = {
+    window.epub.utils = {
         slugify: slugify,
         escapeXml: escapeXml,
         getImgExt: getImgExt,
+        getImgMimeType: getImgMimeType,
         getUid: getUid,
         zipFile: zipFile,
     }

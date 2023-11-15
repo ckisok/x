@@ -11,14 +11,14 @@
     "default_popup": "index.html"
   },
   "host_permissions": [
-    "<all_urls>"
+    "*://*/*"
   ],
   "web_accessible_resources": [
     {
       "resources": [
-        "assets/js/footer_note.js",
-        "assets/styles/footer_note.css",
-        "assets/styles/reset.css"
+        "assets/book/js/footer_note.js",
+        "assets/book/styles/footer_note.css",
+        "assets/book/styles/reset.css"
       ],
       "matches": [
         "<all_urls>"

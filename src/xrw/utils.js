@@ -59,10 +59,14 @@
         return dom.querySelector('body').innerHTML;
     }
 
-
+    /**
+     * 下载图片
+     * @param url
+     * @return {Promise<Blob>}
+     */
     async function downloadImage(url) {
-        const resp = await chrome.runtime.sendMessage({ url: url })
-        console.log('下载结果:', resp)
+        const base64 = await chrome.runtime.sendMessage({ url: url })
+        return await fetch(base64).then(resp => resp.blob())
     }
 
     // 处理图片的尺寸

@@ -1,4 +1,4 @@
-const ChapterUidMap = {
+const ChapterUidDb = {
     "cfc32da010cfcd208495488": 0,
     "c4c329b011c4ca4238a0201": 1,
     "c81322c012c81e728d9d180": 2,

@@ -1,14 +1,8 @@
 (() => {
-    // import {uuid, zipFile} from "../js/utils.js";
-    // import getPackage from "./templates/package.js";
-    // import getChapter from "./templates/chapter.js";
-    // import getContainer from "./templates/container.js";
-    // import getToc from "./templates/toc.js";
     // import {getImgExt, getUid, slugify, CORS_PROXY} from "./utils.js";
     const uuid = window.uuidv4
 
-    const epubUtils = window.epubUtils
-    const escapeXml = epubUtils.escapeXml
+    const {escapeXml, zipFile} = window.epub.utils
 
     function getChapter(chapter) {
         const {title, html, style} = chapter;
@@ -191,13 +185,12 @@ ${chapters.map((chapter) => `    <itemref idref="chapter-${chapter.chapterIdx}" 
                     }
 
                     // 下载图片并替换图片地址为本地地址
-                    // todo: 检测重复图片的下载
                     try {
-                        const imgBlob = await fetch(CORS_PROXY + encodeURIComponent(src)).then(resp => resp.blob())
+                        const imgBlob = await window.utils.downloadImage(src)
                         imageCount++
 
-                        const uid = getUid();
-                        const ext = getImgExt({mimeType: imgBlob.type, fileUrl: src});
+                        const uid = window.epub.utils.getUid();
+                        const ext = window.epub.utils.getImgExt({mimeType: '', fileUrl: src})
                         const id = `${uid}.${ext}`;
 
                         imgEl.setAttribute("src", `images/${id}`);
@@ -207,7 +200,6 @@ ${chapters.map((chapter) => `    <itemref idref="chapter-${chapter.chapterIdx}" 
                             blob: imgBlob,
                         })
                     } catch (e) {
-                        // todo: 失败时重试 3 次
                         errorCount++
                         console.error(e);
                         console.warn("Failed to fetch (will use placeholder):", src);
@@ -262,7 +254,7 @@ ${script}
 </body>
 </html>
 `
-            await epubUtils.zipFile(this.title + '.html', html)
+            await zipFile(this.title + '.html', html)
         }
 
         /**
@@ -289,14 +281,14 @@ ${script}
             // 下载封面图
             if (this.cover) {
                 console.debug('下载封面图: ', this.cover)
-                const coverImgBlob = await fetch(CORS_PROXY + encodeURIComponent(this.cover)).then(resp => resp.blob())
-                const ext = getImgExt({mimeType: coverImgBlob.type, fileUrl: this.cover})
+                const coverImgBlob = await window.utils.downloadImage(this.cover)
+                const ext = window.epub.utils.getImgExt({mimeType: '', fileUrl: this.cover})
                 this.cover = `images/book-cover-image.${ext}`
                 this.coverMineType = coverImgBlob.type
                 zip.file("OEBPS/" + this.cover, coverImgBlob)
             }
             // 下载缺失图片占位符
-            const placeholderImgBlob = await fetch("/epub/img-placeholder.png", {cache: "no-cache"}).then(resp => resp.blob())
+            const placeholderImgBlob = await fetch(chrome.runtime.getURL('assets/book/img-placeholder.png'), {cache: "no-cache"}).then(resp => resp.blob())
             zip.file("OEBPS/images/img-placeholder.png", placeholderImgBlob);
 
             zip.file("OEBPS/package.opf", getPackage(this));
@@ -314,12 +306,12 @@ ${script}
             return zip
                 .generateAsync({type: "blob", mimeType: "application/epub+zip"})
                 .then((content) => {
-                    saveAs(content, `${slugify(this.title)}.epub`);
+                    saveAs(content, `${window.epub.utils.slugify(this.title)}.epub`);
                 });
         }
     }
 
-    window.epub = {
+    window.epub.main = {
         Book: Book,
     }
 })();

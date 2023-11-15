@@ -1,14 +1,39 @@
-const CommonStylesAssets = [
-    chrome.runtime.getURL('assets/styles/footer_note.css'),
-    chrome.runtime.getURL('assets/styles/reset.css'),
-]
-const CommonStyles = Promise.all(CommonStylesAssets.map(url => {
-    return fetch(url).then(resp => resp.text())
-}))
+/**
+ * 获取公共样式
+ * @return {Promise<Awaited<string>[]>}
+ */
+async function getCommonStyles() {
+    return await Promise.all([
+        chrome.runtime.getURL('assets/book/styles/footer_note.css'),
+        chrome.runtime.getURL('assets/book/styles/reset.css'),
+    ].map(url => {
+        return fetch(url).then(resp => resp.text())
+    }))
+}
 
 /**
- * 解密文件
- * @param {string} data
+ * 获取公共脚本
+ * @return {Promise<Awaited<string>[]>}
+ */
+async function getCommonScripts() {
+    return await Promise.all([
+        chrome.runtime.getURL('assets/book/js/footer_note.js'),
+    ].map(url => {
+        return fetch(url).then(resp => resp.text())
+    }))
+}
+
+function getCoverChapterHtml(bookInfo) {
+    return `<section data-book-id="${bookInfo.bookId}" data-chapter-uid="1" class="readerChapterContent"><div data-wr-bd="1" data-wr-co="337">
+  <h1 class="firstTitle">
+    <img src="${bookInfo.cover}" alt="封面">
+  </h1>
+</div></section>`
+}
+
+/**
+ * 解密 json 文件
+ * @param {{toc: [], detail: *, chapters: []}} data 文件内容
  * @return {Promise<{bookInfo: *, bookToc: *[], bookChapters: *[], bookId: string}>}
  */
 async function decryptFile(data) {
@@ -19,36 +44,36 @@ async function decryptFile(data) {
     const bookToc = _toc.toc
     const bookId = bookInfo.bookId
 
-    const chapters = []
+    let chapters = []
     bookChapters.forEach(chapter => {
-        chapter.chapterUid = ChapterUidMap[chapter.cid]
+        chapter.chapterUid = ChapterUidDb[chapter.cid]
 
         let style
         if ('/web/book/chapter/e_0' in chapter) {
             // epub
-            chapter['/web/book/chapter/e_0'] = window.decrypt.chk(chapter['/web/book/chapter/e_0'])
-            chapter['/web/book/chapter/e_1'] = window.decrypt.chk(chapter['/web/book/chapter/e_1'])
-            chapter['/web/book/chapter/e_2'] = window.decrypt.chk(chapter['/web/book/chapter/e_2'])
-            chapter['/web/book/chapter/e_3'] = window.decrypt.chk(chapter['/web/book/chapter/e_3'])
+            chapter['/web/book/chapter/e_0'] = window.weread.utils.chk(chapter['/web/book/chapter/e_0'])
+            chapter['/web/book/chapter/e_1'] = window.weread.utils.chk(chapter['/web/book/chapter/e_1'])
+            chapter['/web/book/chapter/e_2'] = window.weread.utils.chk(chapter['/web/book/chapter/e_2'])
+            chapter['/web/book/chapter/e_3'] = window.weread.utils.chk(chapter['/web/book/chapter/e_3'])
 
-            style = window.decrypt.dS(chapter['/web/book/chapter/e_2'])
-            style = window.style.parse(style, {
+            style = window.weread.utils.dS(chapter['/web/book/chapter/e_2'])
+            style = window.weread.style.parse(style, {
                 removeFontSizes: true,
                 enableTranslate: false,
             })
-            chapter.style = window.mutation.processStyles(style, bookId)
+            chapter.style = window.weread.store.processStyles(style, bookId)
 
-            const html = window.decrypt.dH(chapter['/web/book/chapter/e_0'] + chapter['/web/book/chapter/e_1'] + chapter['/web/book/chapter/e_3'])
-            const htmls = window.html.parse(html, style, 10000)
-            chapter.htmls = window.mutation.processHtmls(htmls, bookId)
+            const html = window.weread.utils.dH(chapter['/web/book/chapter/e_0'] + chapter['/web/book/chapter/e_1'] + chapter['/web/book/chapter/e_3'])
+            const htmls = window.weread.html.parse(html, style, 10000)
+            chapter.htmls = window.weread.store.processHtmls(htmls, bookId)
         } else if ('/web/book/chapter/t_0' in chapter) {
             // txt
-            chapter['/web/book/chapter/t_0'] = window.decrypt.chk(chapter['/web/book/chapter/t_0'])
-            chapter['/web/book/chapter/t_1'] = window.decrypt.chk(chapter['/web/book/chapter/t_1'])
+            chapter['/web/book/chapter/t_0'] = window.weread.utils.chk(chapter['/web/book/chapter/t_0'])
+            chapter['/web/book/chapter/t_1'] = window.weread.utils.chk(chapter['/web/book/chapter/t_1'])
 
-            const html = window.decrypt.dT(chapter['/web/book/chapter/t_0'] + chapter['/web/book/chapter/t_1'])
-            const htmls = window.html.parseTxt(html, 10000)
-            chapter.htmls = window.mutation.processHtmls(htmls, bookId)
+            const html = window.weread.utils.dT(chapter['/web/book/chapter/t_0'] + chapter['/web/book/chapter/t_1'])
+            const htmls = window.weread.html.parseTxt(html, 10000)
+            chapter.htmls = window.weread.store.processHtmls(htmls, bookId)
         }
 
         // 对 html 进行一些处理
@@ -73,17 +98,16 @@ async function decryptFile(data) {
             return html;
         }).join("");
 
-
         const chapterInToc = bookToc.find(item => item.chapterUid === chapter.chapterUid)
 
         let html = `<section data-book-id="${bookId}" data-chapter-uid="${chapterInToc.chapterUid}" class="readerChapterContent">`
         // 判断是否添加章节标题
-        if (window.m278.showChapterTitle(bookInfo)) {
-            html += `<div class="chapterTitle">${window.m278.chapterTitleText(bookInfo, chapterInToc)}</div>`
+        if (window.weread.m278.showChapterTitle(bookInfo)) {
+            html += `<div class="chapterTitle">${window.weread.m278.chapterTitleText(bookInfo, chapterInToc)}</div>`
         }
         html += `${sections}</section>`
         html = window.utils.mergeSpanInHtml(html)
-        const title = window.m278.chapterTitleText(bookInfo, chapterInToc) || chapterInToc.title
+        const title = window.weread.m278.chapterTitleText(bookInfo, chapterInToc) || chapterInToc.title
 
         chapters.push({
             title: title,
@@ -98,12 +122,29 @@ async function decryptFile(data) {
     for (const chapter of chapters) {
         chapter.html = await window.utils.adjustImgSizeInChapter(chapter.html)
     }
+    chapters = chapters.sort((a, b) => a.chapterIdx - b.chapterIdx)
+
+    // 封面图替换成高清图片
+    const re = /(.+)\/s_([^/]+)$/
+    if (re.test(bookInfo.cover)) {
+        bookInfo.cover = bookInfo.cover.replace(/(.+)\/s_([^/]+)$/, '$1/t9_$2')
+    }
+
+    if (chapters[0].title !== '封面') {
+        chapters.unshift({
+            title: '封面',
+            chapterUid: chapters[0].chapterUid-1,
+            chapterIdx: chapters[0].chapterIdx-1,
+            html: getCoverChapterHtml(bookInfo),
+            style: chapters[0].style,
+        })
+    }
 
     return {
         bookId: bookId,
         bookInfo: bookInfo,
         bookToc: bookToc,
-        bookChapters: chapters.sort((a, b) => a.chapterIdx - b.chapterIdx)
+        bookChapters: chapters,
     }
 }
 
@@ -116,7 +157,7 @@ async function decryptFile(data) {
  */
 async function bundleBook(format, bookData, commonStyles = [], commonScripts = []) {
     let {title, author, cover, intro, isbn, publishTime, publisher} = bookData.bookInfo
-    const book = new window.epub.Book({
+    const book = new window.epub.main.Book({
         cover: cover,
         isbn: isbn,
         author: author,
@@ -136,7 +177,7 @@ async function bundleBook(format, bookData, commonStyles = [], commonScripts = [
         book.addEventListener('image', (evt) => {
             const {success, error} = evt.detail
             // 更新进度提示
-            document.querySelector('.download_btn').textContent = `打包图片进度: (${success}:${error})`
+            document.querySelector('#btn').textContent = `打包图片进度: (${success}:${error})`
         })
         await book.export2epub()
     } else {
@@ -191,28 +232,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     })
 
 
-    document.querySelector('#btn').addEventListener('click', async (evt) => {
+    document.querySelector('#btn').addEventListener('click', (evt) => {
         evt.preventDefault()
 
         const formData = new FormData(document.querySelector('form'))
         const format = formData.get('format')
-        const commonStyles = await CommonStyles
 
-        if (format !== 'html') {
-            alert('目前仅支持 html 格式')
-            return
-        }
+        // if (format !== 'html') {
+        //     alert('目前仅支持 html 格式')
+        //     return
+        // }
 
         if (dropFile) {
             document.querySelector('#btn').disabled = true
             document.querySelector('#btn').textContent = '生成中'
 
             setTimeout(async () => {
+                const commonStyles = await getCommonStyles()
+                const commonScripts = await getCommonScripts()
+
                 try {
                     const fileContent = await dropFile.text()
                     const book = await decryptFile(JSON.parse(fileContent))
                     console.log(book)
-                    await bundleBook(format, book, commonStyles)
+                    await bundleBook(format, book, commonStyles, commonScripts)
                 } catch (e) {
                     console.error(e)
                 } finally {
@@ -220,7 +263,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     document.querySelector('#btn').textContent = '生成'
                 }
             }, 0)
-
         }
     })
 })

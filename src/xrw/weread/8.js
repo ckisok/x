@@ -49,7 +49,7 @@
         });
     }
 
-    window.mutation = {
+    window.weread.store = {
         processStyles: processStyles,
         processHtmls: processHtmls,
     }

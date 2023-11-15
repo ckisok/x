@@ -4,7 +4,6 @@ chrome.runtime.onMessage.addListener(({url}, sender, sendResponse) => {
 })
 
 async function download(url, sendResponse) {
-    console.log('开始下载:', url)
     const resp = await fetch(url, {
         method: 'GET',
         cache: 'no-store',

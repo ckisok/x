@@ -189,7 +189,7 @@
         return !(M278.isEPub(bookInfo) || M278.actualTreatBookAsEpub(bookInfo)) || M278.isTrialReadBook(bookInfo)
     }
 
-    window.m278 = {
+    window.weread.m278 = {
         chapterTitleText: chapterTitleText,
         showChapterTitle: showChapterTitle,
     }
