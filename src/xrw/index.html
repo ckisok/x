@@ -37,7 +37,8 @@
 <form>
     <div class="d-grid gap-4">
         <label>
-            <textarea name="file" disabled placeholder="拖动文件到此处"></textarea>
+            <textarea name="file" readonly placeholder="拖动文件到此处"></textarea>
+            <input type="file" accept="application/json" hidden="hidden" style="display: none">
         </label>
         <div>
             <input type="radio" class="btn-check" name="format" value="html" id="format-html" autocomplete="off" checked>

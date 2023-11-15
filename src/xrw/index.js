@@ -25,7 +25,7 @@ async function getCommonScripts() {
 
 function getCoverChapterHtml(bookInfo) {
     return `<section data-book-id="${bookInfo.bookId}" data-chapter-uid="1" class="readerChapterContent"><div data-wr-bd="1" data-wr-co="337">
-  <h1 class="firstTitle">
+  <h1>
     <img src="${bookInfo.cover}" alt="封面">
   </h1>
 </div></section>`
@@ -119,8 +119,11 @@ async function decryptFile(data) {
     })
 
     // 调整图片大小
+    let count = 0
+    let total = chapters.length
     for (const chapter of chapters) {
         chapter.html = await window.utils.adjustImgSizeInChapter(chapter.html)
+        document.querySelector('#btn').textContent = `解密进度: ${++count}/${total}`
     }
     chapters = chapters.sort((a, b) => a.chapterIdx - b.chapterIdx)
 
@@ -190,6 +193,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const textarea = document.querySelector('textarea')
     let timer
     let dropFile
+    document.querySelector('input[type=file]').addEventListener('change', (evt) => {
+        if (evt.target.files.length > 0) {
+            dropFile = evt.target.files[0]
+            textarea.value = dropFile.name
+            document.querySelector('#btn').disabled = false
+        }
+    })
     textarea.addEventListener('dragover', (evt) => {
         evt.preventDefault()
         textarea.classList.add('overing')
@@ -230,24 +240,24 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('请使用json文件')
         }
     })
+    textarea.addEventListener('click', (evt) => {
+        evt.preventDefault()
+
+        document.querySelector('input[type=file]').click()
+    })
 
 
     document.querySelector('#btn').addEventListener('click', (evt) => {
         evt.preventDefault()
 
-        const formData = new FormData(document.querySelector('form'))
-        const format = formData.get('format')
-
-        // if (format !== 'html') {
-        //     alert('目前仅支持 html 格式')
-        //     return
-        // }
-
         if (dropFile) {
             document.querySelector('#btn').disabled = true
-            document.querySelector('#btn').textContent = '生成中'
+            document.querySelector('#btn').textContent = '解密中'
 
             setTimeout(async () => {
+                const formData = new FormData(document.querySelector('form'))
+                const format = formData.get('format')
+
                 const commonStyles = await getCommonStyles()
                 const commonScripts = await getCommonScripts()
 
@@ -255,6 +265,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     const fileContent = await dropFile.text()
                     const book = await decryptFile(JSON.parse(fileContent))
                     console.log(book)
+                    document.querySelector('#btn').textContent = '生成文件中'
+
                     await bundleBook(format, book, commonStyles, commonScripts)
                 } catch (e) {
                     console.error(e)
