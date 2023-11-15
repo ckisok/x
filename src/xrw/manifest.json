@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "夏如雯",
   "description": "你可以叫我雯雯，我是魏如雪的好朋友",
-  "version": "1.1",
+  "version": "1.1.1",
   "background": {
     "service_worker": "sw.js",
     "type": "module"
