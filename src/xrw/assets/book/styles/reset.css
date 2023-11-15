@@ -10,7 +10,10 @@ body {
     font-family: "SourceHanSerifCN-Bold",PingFang SC,-apple-system,SF UI Text,Lucida Grande,STheiti,Microsoft YaHei,sans-serif;
     color: #0d141e;
 }
-
+.custom-cover {
+    display: flex;
+    justify-content: center;
+}
 .readerChapterContent pre {
     background-color: #e6e6e6;
     color: #0d141e;

@@ -25,9 +25,9 @@ async function getCommonScripts() {
 
 function getCoverChapterHtml(bookInfo) {
     return `<section data-book-id="${bookInfo.bookId}" data-chapter-uid="1" class="readerChapterContent"><div data-wr-bd="1" data-wr-co="337">
-  <h1>
+  <div class="custom-cover">
     <img src="${bookInfo.cover}" alt="封面">
-  </h1>
+  </div>
 </div></section>`
 }
 
