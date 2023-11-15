@@ -12,7 +12,15 @@ let retry = 0
 
 const selectorMap = {
     prev: 'button.readerHeaderButton',
-    next: 'button.readerFooter_button',
+    next: 'button.readerFooter_button:not(.readerFooter_button_twoLines)',
+}
+
+function log(msg, ...args) {
+    if (typeof msg === 'string') {
+        console.debug(`[wrx]: ${msg}`, ...args)
+    } else {
+        console.debug('[wrx]:', msg, ...args)
+    }
 }
 
 // 在页面添加一个按钮
@@ -34,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const storageUsage = await navigator.storage.estimate()
     const indexedSize = (storageUsage.usage / 1024 / 1024).toFixed(2)
-    console.log(`[wrx]: IndexedDB 使用了 %c~${indexedSize}M%c 存储空间`, 'color: red;font-size:16px;', '')
+    log(`IndexedDB 使用了 %c~${indexedSize}M%c 存储空间`, 'color: red;font-size:16px;', '')
 })
 
 function setAutoRunningStatus(open) {
@@ -70,17 +78,17 @@ async function run(direction, interval, isScroll) {
         if (!document.querySelector('.renderTargetContainer')) {
             if (retry <= 6) {
                 retry++
-                console.debug('按钮没有出现，5秒后重试')
+                log('按钮没有出现，5秒后重试')
                 setTimeout(() => {
                     run(direction, interval, isScroll)
                 }, 5000)
             } else {
-                console.warn('未找到按钮，超时结束')
+                log('未找到按钮，超时结束')
                 isRunning = false
                 setAutoRunningStatus(isRunning)
             }
         } else {
-            console.debug(`已经翻到${direction === 'prev' ? '第' : '最后'}一页了，正常结束`)
+            log(`已经翻到${direction === 'prev' ? '第' : '最后'}一页了，正常结束`)
             isRunning = false
             setAutoRunningStatus(isRunning)
         }
@@ -102,7 +110,7 @@ async function run(direction, interval, isScroll) {
         await sleep(1500)
         if (checkStop()) return
     }
-    console.debug('开始翻页')
+    log('开始翻页')
     btn.click()
 
     if (checkStop()) return
@@ -110,10 +118,11 @@ async function run(direction, interval, isScroll) {
     setTimeout(() => {
         run(direction, interval, isScroll)
     }, adjustInterval)
+    log(`${adjustInterval}ms 后执行`)
 }
 
 chrome.runtime.onMessage.addListener(async (msg) => {
-    console.debug(msg)
+    log(msg)
     const {type, args = {}} = msg
     const {direction, interval, isScroll} = args
 
@@ -121,7 +130,7 @@ chrome.runtime.onMessage.addListener(async (msg) => {
         case 'start':
             if (isRunning) {
                 // 避免重复执行
-                console.debug('正在运行中，不需要重复执行')
+                log('正在运行中，不需要重复执行')
                 return
             }
             wantStop = false

@@ -75,8 +75,17 @@
         URL.revokeObjectURL(objectUrl);
     }
 
+    function log(msg, ...args) {
+        if (typeof msg === 'string') {
+            console.debug(`[wrx]: ${msg}`, ...args)
+        } else {
+            console.debug('[wrx]:', msg, ...args)
+        }
+    }
+
     window.utils = {
         hash: hash,
         downloadFile: downloadFile,
+        log: log,
     }
 })()
