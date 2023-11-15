@@ -36,6 +36,7 @@ function build() {
         'assets',
         'epub',
         'lib',
+        'chapter_uid_db.js',
         'index.html',
         'manifest.json',
         'sw.js',
@@ -44,9 +45,9 @@ function build() {
 
     // 混淆核心文件
     ;[
-        'weread/app.js',
+        'weread/8.js',
+        'weread/__init__.js',
         'weread/m278.js',
-        'weread/mutation.js',
         'weread/utils.js',
         'index.js',
     ].forEach(item => copyAndObfuscateFile(item, item))
