@@ -46,6 +46,7 @@ function handleManifestFile() {
         'overrides',
         'rules',
         'scripts',
+        'background.js',
         'popup.html',
         'toc.css',
     ].forEach(item => copyDirectory(item, item));
