@@ -3,6 +3,7 @@
 ## store 数据结构
 
 ### chapter
+
 ```js
 const chapters = [
     {
@@ -25,6 +26,7 @@ const chapters = [
 ```
 
 ### toc
+
 ```js
 const tocs = [
     {
@@ -36,6 +38,7 @@ const tocs = [
 ```
 
 ### detail
+
 ```js
 const details = [
     {
@@ -45,3 +48,10 @@ const details = [
     },
 ]
 ```
+
+## todo
+
+- css url抹除，避免生成 epub 格式时报警告
+- 重复图下载(已解决)
+- epub 文件压缩
+- 目录层级
